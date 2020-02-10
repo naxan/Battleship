@@ -1,3 +1,37 @@
+body, html {
+    height: 100vh;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
 body {
-    background-color: blue;
+    text-align: center;
+}
+
+h1 {
+    font-size: 50px;
+    margin: 40px 0;
+}
+
+.game {
+    display: flex;
+    justify-content: center;
+}
+
+table {
+    margin: 0px;
+}
+
+td {
+    height: 60px;
+    width: 60px;
+    border: 4px solid grey;
+    cursor: pointer;
+}
+
+aside {
+    width: 200px;
+}
+
+#reset {
+    margin-top: 50px;
 }
