@@ -40,10 +40,18 @@ console.log('sanity check');
 // shipsLeft === 0
 // if shipsLeft === 0, win
 // if cannonballs === 0 && shipsLeft > 0, lose
-
 // when game is over
 // show message ('you won!' or 'you lost')
 // disable click event. reenable with reset button.
+
+
+// time to randomize ships amongst the board!
+// first create board array with 64 characters
+// for loop, i < shipsLeft
+// board[i] = 1
+// first 7 characters in array are now ships
+// need to shuffle array to randomly place ships
+
 
 // STATIC VARIABLES
 let board;
@@ -82,19 +90,40 @@ function render() {
     }
 }
 
+function shuffle(array) {
+    let newPosition;
+    let temporaryStorage;
+
+    for (let i = array.length - 1; i > 0; i--) {
+        newPosition = Math.floor(Math.random() * (i + 1));
+
+        temporaryStorage = array[i];
+        array[i] = array[newPosition];
+        array[newPosition] = temporaryStorage;
+    }
+    return array;
+}
+
 function initialize() {
+    // sets initial values
+    shipsSunk = 0;
+    shipsLeft = 7;
+    cannonballs = 24;
+    message.innerText = `Search for ships!`;
+
     // TODO: randomize board
-    board = Array(64).fill(null);
+    board = Array(64).fill(0);
+    for (let i = 0; i < shipsLeft; i++) {
+        board[i] = 1;
+    }
+    shuffle(board);
+    console.log(board);
 
     // Remove all divs in table.
     let markedSquares = document.querySelectorAll('div .map-mark');
     for (let i = 0; i < markedSquares.length; i++) {
         markedSquares[i].parentNode.removeChild(markedSquares[i]);
     }
-
-    shipsSunk = 0;
-    shipsLeft = 7;
-    cannonballs = 24;
 
     render();
     table.addEventListener('click', handleGuess);
@@ -120,7 +149,7 @@ function handleGuess(event) {
         shipsSunk++;
         shipsLeft--;
         cannonballs--;
-    } else if (board[index] === null) {
+    } else if (board[index] === 0) {
         let div = document.createElement('div');
         div.setAttribute('class', 'map-mark');
         tableData[index].appendChild(div);
@@ -133,6 +162,3 @@ function handleGuess(event) {
 }
 
 initialize();
-board[0] = 1;
-board[3] = 1;
-// ^ for testing
