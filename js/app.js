@@ -65,7 +65,6 @@ btn.addEventListener('click', initialize);
 // table 'click' listener in initialize function
 
 // FUNCTIONS
-
 function render() {
     shipsSunkSpan.innerText = shipsSunk;
     shipsLeftSpan.innerText = shipsLeft;
@@ -73,7 +72,7 @@ function render() {
 
     // TODO: change DOM in render, not handleGuess.
 
-    // TODO: check for winner
+    // Checks for winner
     if (shipsLeft === 0) {
         message.innerHTML = `<strong>Congrats!</strong> You've won! Huzzah and all that.`;
         table.removeEventListener('click', handleGuess);
@@ -86,6 +85,12 @@ function render() {
 function initialize() {
     // TODO: randomize board
     board = Array(64).fill(null);
+
+    // Remove all divs in table.
+    let markedSquares = document.querySelectorAll('div .map-mark');
+    for (let i = 0; i < markedSquares.length; i++) {
+        markedSquares[i].parentNode.removeChild(markedSquares[i]);
+    }
 
     shipsSunk = 0;
     shipsLeft = 7;
@@ -107,6 +112,7 @@ function handleGuess(event) {
 
     if (board[index] === 1) {
         let div = document.createElement('div');
+        div.setAttribute('class', 'map-mark');
         tableData[index].appendChild(div);
         div.style.backgroundColor = 'red';
         board[index] = -1;
@@ -114,10 +120,9 @@ function handleGuess(event) {
         shipsSunk++;
         shipsLeft--;
         cannonballs--;
-
-        console.log(shipsSunk, shipsLeft, cannonballs);
-    } else if (!board[index]) {
+    } else if (board[index] === null) {
         let div = document.createElement('div');
+        div.setAttribute('class', 'map-mark');
         tableData[index].appendChild(div);
         div.style.backgroundColor = 'grey';
         board[index] = -1;
