@@ -27,28 +27,75 @@ console.log('sanity check');
 // if the index is null, color div gray and set board[index] equal to -1 (counts as being clicked)
 // else if -1, return nothing as its already been clicked
 
+
+// time to set initial variables for everything except the board (will stay null for  now)
+// boatsSunk = 0
+// boatsLeft = 7
+// cannonballs = 24;
+
+
+// checking for win/loss
+// game ends if
+// cannonballs === 0
+// shipsLeft === 0
+// if shipsLeft === 0, win
+// if cannonballs === 0 && shipsLeft > 0, lose
+
+// when game is over
+// show message ('you won!' or 'you lost')
+// disable click event. reenable with reset button.
+
 // STATIC VARIABLES
 let board;
-let boatsSunk;
-let boatsLeft;
+let shipsSunk;
+let shipsLeft;
 let cannonballs;
 
 // CACHED ELEMENTS
 let table = document.querySelector('table');
 let tableData = document.querySelectorAll('td');
-let squares = document.querySelectorAll('td div');
+let shipsSunkSpan = document.getElementById('ships-sunk');
+let shipsLeftSpan = document.getElementById('ships-left');
+let cannonballsSpan = document.getElementById('cannonballs');
+let message = document.getElementById('message');
+let btn = document.getElementById('reset');
 
-function initialize() {
-    board = Array(64).fill(null);
+// EVENT LISTENERS
+btn.addEventListener('click', initialize);
+// table 'click' listener in initialize function
+
+// FUNCTIONS
+
+function render() {
+    shipsSunkSpan.innerText = shipsSunk;
+    shipsLeftSpan.innerText = shipsLeft;
+    cannonballsSpan.innerText = cannonballs;
+
+    // TODO: change DOM in render, not handleGuess.
+
+    // TODO: check for winner
+    if (shipsLeft === 0) {
+        message.innerHTML = `<strong>Congrats!</strong> You've won! Huzzah and all that.`;
+        table.removeEventListener('click', handleGuess);
+    } else if (cannonballs === 0) {
+        message.innerHTML = `<strong>Sorry!</strong> You've lost. Git gud`;
+        table.removeEventListener('click', handleGuess);
+    }
 }
 
-table.addEventListener('click', handleGuess);
+function initialize() {
+    // TODO: randomize board
+    board = Array(64).fill(null);
+
+    shipsSunk = 0;
+    shipsLeft = 7;
+    cannonballs = 24;
+
+    render();
+    table.addEventListener('click', handleGuess);
+}
 
 function handleGuess(event) {
-    initialize();
-    board[0] = 1;
-    board[3] = 1;
-    // ^ for testing
 
     let index = -1;
     for (let i = 0; i < tableData.length; i++) {
@@ -64,15 +111,23 @@ function handleGuess(event) {
         div.style.backgroundColor = 'red';
         board[index] = -1;
 
-        // TODO: update ships sunk, ships left, and cannonballs left
+        shipsSunk++;
+        shipsLeft--;
+        cannonballs--;
+
+        console.log(shipsSunk, shipsLeft, cannonballs);
     } else if (!board[index]) {
         let div = document.createElement('div');
         tableData[index].appendChild(div);
         div.style.backgroundColor = 'grey';
         board[index] = -1;
 
-        // TODO: ditto ^
-    } else {
-        return;
+        cannonballs--;
     }
+    render();
 }
+
+initialize();
+board[0] = 1;
+board[3] = 1;
+// ^ for testing
