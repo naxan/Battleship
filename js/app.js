@@ -1,8 +1,13 @@
-// STATIC VARIABLES
+// VARIABLES
 let board;
 let shipsSunk;
 let shipsLeft;
 let cannonballs;
+let turn;
+let shipsToPlace;
+let startingIndex = -1;
+let secondIndex = -1;
+let placeShips;
 
 // CACHED ELEMENTS
 let table = document.querySelector('table');
@@ -11,11 +16,21 @@ let shipsSunkSpan = document.getElementById('ships-sunk');
 let shipsLeftSpan = document.getElementById('ships-left');
 let cannonballsSpan = document.getElementById('cannonballs');
 let message = document.getElementById('message');
-let btn = document.getElementById('reset');
+let turnMessage = document.getElementById('player-turn');
+let resetBtn = document.getElementById('reset');
+let nextBtn = document.getElementById('next');
+let squares = document.querySelectorAll('td div');
+let markedSquares = document.querySelectorAll('div .map-mark');
 
 // EVENT LISTENERS
-btn.addEventListener('click', initialize);
+resetBtn.addEventListener('click', initializeShips);
 // table 'click' listener in initialize function
+
+// LOOK UP TURN
+const lookup = {
+    '1': 'Player 1',
+    '-1': 'Player 2'
+}
 
 // FUNCTIONS
 function render() {
@@ -24,6 +39,13 @@ function render() {
     cannonballsSpan.innerText = cannonballs;
 
     // TODO: change DOM in render, not handleGuess.
+    if (placeShips) {
+        for (let i = 0; i < board.length; i++) {
+            if (board[i] === 0) {
+                document.querySelectorAll('td div')[i].removeAttribute('class');
+            }
+        }
+    }
 
     // Checks for winner
     if (shipsLeft === 0) {
@@ -49,12 +71,51 @@ function shuffle(array) {
     return array;
 }
 
-function initialize() {
+// game starts with initializeShips
+// message reads "place your ships!"
+// player sets ships
+// when shipsToPlace === 0, 'next' button appears
+// next button should
+// lookup turn. if player 1 turn, save board to variable pOneBoard. if player 2 turn, save board to pTwoBoard
+// set shipsToPlace back to initial value (ie 4)
+// clear board back to 0's
+// delete divs
+// switch player turn
+
+function initializeShips() {
+    placeShips = true;
+    board = new Array(64).fill(0);
+    render();
+    nextBtn.style.display = 'none';
+
+    // hide all divs
+    let amountOfDivs = document.querySelectorAll('td div').length;
+    for (let i = 0; i < amountOfDivs.length; i++) {
+        document.querySelectorAll('td div')[i].style.width = '0px';
+        document.querySelectorAll('td div')[i].style.length = '0px';
+    }
+
+    if (!turn) {
+        turn = 1;
+    }
+    turnMessage.innerText = `${lookup[turn]}'s turn`;
+    message.innerText = `Place your ships!`;
+
+    shipsToPlace = 4;
+    table.addEventListener('click', selectShips);
+    nextBtn.removeEventListener('click', initializeShips);
+
+    console.log('initializeShips running');
+}
+//initializeShips();
+
+function initializePlay() {
+    placeShips = false;
     // sets initial values
     shipsSunk = 0;
     shipsLeft = 7;
     cannonballs = 24;
-    message.innerText = `Search for ships!`;
+    message.innerText = `Place your ships!`;
 
     /*
     // randomize board
@@ -67,7 +128,6 @@ function initialize() {
     board = new Array(64).fill(0);
 
     // Remove all divs in table.
-    let markedSquares = document.querySelectorAll('div .map-mark');
     for (let i = 0; i < markedSquares.length; i++) {
         markedSquares[i].parentNode.removeChild(markedSquares[i]);
     }
@@ -110,39 +170,10 @@ function handleGuess(event) {
 }
 */
 
-initialize();
-
-// to create/set battleships larger than 1 block
-// no random generation. board starts out all 0
-// function that runs on table click
-// player selects starting block
-// block board value = 1
-// starting block stored in variable
-// player selects surrounding blocks
-// if 2nd selected block has index +1, -1, +8, OR -8 to the original, click event runs
-// then next blocks must ALL be in the same vein of +1, -1, +8, or -8 from the previous
-// if 2nd block is +1 to starting block, 3rd block must be +1 to 2nd block or -1 to starting block
-// if 2nd block is +8 to starting block, 3rd block must be +8 to 2nd block or -8 to starting block, etc etc
-
-// starting block variable is outside the function so it is not overwritten each time the function is run
-// starting block will have an initial value
-// when square is clicked, if starting block has initial value, initial value now equals current index
-// when ship placing is complete, startingBlock returns to initial value (-1)
-
-// blocksUsed will be used to count how many blocks have been and can continue to be used to form the ship
-// each time selectShips runs successfully, blocksUsed++
-// once blocksUsed === 3 (or once it === 2. after the third block is used, it might add 1 to blocksUsed but not check if its equal to 3 until next the function runs),
-// startingBlock's value will be reset to -1
-// blocksUsed value will be reset to 0
-
-// if [8, 16, 24, 32, 40, 48, 56].indexOf(startingIndex) or (secondIndex) then index should not be equal to startingIndex - 1 or secondIndex - 1
-// [ditto].indexOf(secondIndex)
-
-let startingIndex = -1;
-let secondIndex = -1;
-//let blocksUsed = 0;
+initializeShips();
 
 function selectShips(event) {
+    console.log('selectShips running');
     // finds index of square clicked
     let index;
     for (let i = 0; i < tableData.length; i++) {
@@ -151,21 +182,8 @@ function selectShips(event) {
             break;
         }
     }
-
-    // test zone. trying to keep ships from separating around the edges of the board
-
-    // if first or second click is on an edge of the board
-    // next click cannot be + or - previous click index depending on which side of the board its on
-
-    // if startingIndex or secondIndex === 7, 15, 23, 31, 39, 47, or 55, then current index should return nothing if it === 8, 16, 24, 32, 40, 48, or 56
-    // if startingIndex or secondIndex === 8, 16, 24, 32, 40, 48, or 56, then current index should return nothing if it === 7, 15, 23, 31, 39, 47, or 55
-
-    // if ((startingIndex or secondIndex) + 1) % 8 === 0 AND current index % 8 === 0, return nothing
-    // if (startingIndex or secondIndex) % 8 === 0 AND (current inedx + 1) % 8 === 0, return nothing
-    console.log(index);
-    console.log((startingIndex + 1) % 8 === 0 && index % 8 === 0 && startingIndex != -1);
-    console.log(startingIndex % 8 === 0 && (index + 1) % 8 === 0);
-
+    console.log(event.target);
+    // keeps ships from being able to wrap around the edges of the board when placed
     if (
         ((startingIndex + 1) % 8 === 0 && index % 8 === 0 && startingIndex != -1) ||
         (startingIndex % 8 === 0 && (index + 1) % 8 === 0) ||
@@ -180,26 +198,22 @@ function selectShips(event) {
         startingIndex = index;
     }
 
+    let div = document.querySelectorAll('td div')[index];
     // if its the first click and the space is free, create first mark of ship
     if (index === startingIndex && board[index] === 0) {
-        let div = document.createElement('div');
         div.setAttribute('class', 'map-mark');
-        tableData[index].appendChild(div);
-        div.style.backgroundColor = 'red';
 
         board[index] = 1;
+        render();
 
         // if on second click and space is free, AND space is +1, -1, +8, or -8 spaces away from startingIndex, create second mark
     } else if (secondIndex === -1 && board[index] === 0) {
         if ([startingIndex - 1, startingIndex + 1, startingIndex - 8, startingIndex + 8].indexOf(index) > -1) {
-
-            let div = document.createElement('div');
             div.setAttribute('class', 'map-mark');
-            tableData[index].appendChild(div);
-            div.style.backgroundColor = 'red';
 
             board[index] = 1;
             secondIndex = index;
+            render();
         }
         // on third click and space is free, AND space is adequate spaces away from starting or second index (so first, second, and third index are all in the same direction, ie horizontal or vertical), create third mark
     } else if (index != startingIndex && index != secondIndex && board[index] === 0) {
@@ -210,28 +224,24 @@ function selectShips(event) {
             ((index === startingIndex - 8 || index === startingIndex + 8) && (secondIndex === startingIndex + 8 || secondIndex === startingIndex - 8))
         ) {
 
-            let div = document.createElement('div');
             div.setAttribute('class', 'map-mark');
-            tableData[index].appendChild(div);
-            div.style.backgroundColor = 'red';
 
             board[index] = 1;
             startingIndex = -1;
             secondIndex = -1;
 
             console.log('ship complete!');
+            shipsToPlace--;
+            render();
 
+            if (shipsToPlace === 0) {
+                message.innerText = `Your ships have been placed!`;
+                nextBtn.style.display = 'block';
+                table.removeEventListener('click', selectShips);
+                nextBtn.addEventListener('click', initializeShips);
+            }
         }
     }
-
-    /*
-    if (board[index] === 0) {
-        let div = document.createElement('div');
-        div.setAttribute('class', 'map-mark');
-        tableData[index].appendChild(div);
-        div.style.backgroundColor = 'red';
-    }
-    */
 }
 
 // allow player to placd ships on grid
@@ -247,3 +257,6 @@ function selectShips(event) {
 // check for winner (remaining ships to sink === 0) at the end of every turn
 // if player has won, show message and do not show a next button
 // start new game button
+
+// BUG LOG
+// 1. ships cannot be placed all in one line or the game will forever freeze because the last ship cannot fit in the line and thus cant be completed

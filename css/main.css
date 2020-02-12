@@ -1,3 +1,7 @@
+:root {
+    --square-length: 60px;
+}
+
 body, html {
     height: 100vh;
     font-family: Georgia, 'Times New Roman', Times, serif;
@@ -31,22 +35,42 @@ table {
 }
 
 td {
-    height: 60px;
-    width: 60px;
+    height: var(--square-length);
+    width: var(--square-length);
     border: 4px solid grey;
     cursor: pointer;
 }
 
 td div {
-    height: 60px;
-    width: 60px;
     border-radius: 50%;
+}
+
+.map-mark {
+    height: var(--square-length);
+    width: var(--square-length);
+    background-color: red;
 }
 
 aside {
     width: 200px;
 }
 
+.game {
+    margin-bottom: 30px;
+}
+button {
+    margin: 0 auto 30px auto;
+}
+
 #reset {
-    margin-top: 50px;
+    display: block;
+    background-color: red;
+    color: white;
+}
+
+#next {
+    padding: 10px;
+    background-color: black;
+    color: white;
+    font-size: 24px;
 }
