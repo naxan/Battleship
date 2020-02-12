@@ -135,6 +135,9 @@ initialize();
 // startingBlock's value will be reset to -1
 // blocksUsed value will be reset to 0
 
+// if [8, 16, 24, 32, 40, 48, 56].indexOf(startingIndex) or (secondIndex) then index should not be equal to startingIndex - 1 or secondIndex - 1
+// [ditto].indexOf(secondIndex)
+
 let startingIndex = -1;
 let secondIndex = -1;
 //let blocksUsed = 0;
@@ -149,12 +152,32 @@ function selectShips(event) {
         }
     }
 
-    if (board[index] === 0) {
-        if (startingIndex === -1) {
-            startingIndex = index;
-        } else if (secondIndex === -1) {
-            secondIndex = index;
-        }
+    // test zone. trying to keep ships from separating around the edges of the board
+
+    // if first or second click is on an edge of the board
+    // next click cannot be + or - previous click index depending on which side of the board its on
+
+    // if startingIndex or secondIndex === 7, 15, 23, 31, 39, 47, or 55, then current index should return nothing if it === 8, 16, 24, 32, 40, 48, or 56
+    // if startingIndex or secondIndex === 8, 16, 24, 32, 40, 48, or 56, then current index should return nothing if it === 7, 15, 23, 31, 39, 47, or 55
+
+    // if ((startingIndex or secondIndex) + 1) % 8 === 0 AND current index % 8 === 0, return nothing
+    // if (startingIndex or secondIndex) % 8 === 0 AND (current inedx + 1) % 8 === 0, return nothing
+    console.log(index);
+    console.log((startingIndex + 1) % 8 === 0 && index % 8 === 0 && startingIndex != -1);
+    console.log(startingIndex % 8 === 0 && (index + 1) % 8 === 0);
+
+    if (
+        ((startingIndex + 1) % 8 === 0 && index % 8 === 0 && startingIndex != -1) ||
+        (startingIndex % 8 === 0 && (index + 1) % 8 === 0) ||
+        ((secondIndex + 1) % 8 === 0 && index % 8 === 0 && secondIndex != -1) ||
+        (secondIndex % 8 === 0 && (index + 1) % 8 === 0)
+    ) {
+        return;
+    }
+
+    // if clicked square is free and there has been no first click, store this click index as starting index
+    if (board[index] === 0 && startingIndex === -1) {
+        startingIndex = index;
     }
 
     // if its the first click and the space is free, create first mark of ship
@@ -165,10 +188,9 @@ function selectShips(event) {
         div.style.backgroundColor = 'red';
 
         board[index] = 1;
-        console.log(startingIndex);
 
         // if on second click and space is free, AND space is +1, -1, +8, or -8 spaces away from startingIndex, create second mark
-    } else if (index === secondIndex && board[index] === 0) {
+    } else if (secondIndex === -1 && board[index] === 0) {
         if ([startingIndex - 1, startingIndex + 1, startingIndex - 8, startingIndex + 8].indexOf(index) > -1) {
 
             let div = document.createElement('div');
@@ -177,14 +199,15 @@ function selectShips(event) {
             div.style.backgroundColor = 'red';
 
             board[index] = 1;
-            console.log(startingIndex, secondIndex);
+            secondIndex = index;
         }
-        // on third click and space is free, AND space is + or - 1 spaces away from secondIndex, create third mark
+        // on third click and space is free, AND space is adequate spaces away from starting or second index (so first, second, and third index are all in the same direction, ie horizontal or vertical), create third mark
     } else if (index != startingIndex && index != secondIndex && board[index] === 0) {
-        console.log(startingIndex, secondIndex);
         if (
             ((index === secondIndex - 1 || index === secondIndex + 1) && (secondIndex === startingIndex - 1 || secondIndex === startingIndex + 1)) ||
-            ((index === secondIndex - 8 || index === secondIndex + 8) && (secondIndex === startingIndex - 8 || secondIndex === startingIndex + 8))
+            ((index === secondIndex - 8 || index === secondIndex + 8) && (secondIndex === startingIndex - 8 || secondIndex === startingIndex + 8)) ||
+            ((index === startingIndex - 1 || index === startingIndex + 1) && (secondIndex === startingIndex + 1 || secondIndex === startingIndex - 1)) ||
+            ((index === startingIndex - 8 || index === startingIndex + 8) && (secondIndex === startingIndex + 8 || secondIndex === startingIndex - 8))
         ) {
 
             let div = document.createElement('div');
@@ -195,6 +218,8 @@ function selectShips(event) {
             board[index] = 1;
             startingIndex = -1;
             secondIndex = -1;
+
+            console.log('ship complete!');
 
         }
     }
@@ -208,3 +233,17 @@ function selectShips(event) {
     }
     */
 }
+
+// allow player to placd ships on grid
+// allow player to choose a ship to place (have buttons of ships on the side. when ship is selected, add event listener for that ship's placement function, then once ship is placed, remove event listener)
+// have "finish ship placement"/'next' button that only appears once all ships are placed. removes all divs from the board and saves board array to player1's board variable
+// allow player 2 to place ships
+// player1's turn. display a board taking aim at player 2's ships to click on, as well as a smaller reference board to see how their ships are faring and whats been hit
+// handle click event to check if theres a ship
+// change div color and display message if ship has been hit. remove event listener. add next button
+// player 2's turn
+// player 2's reference board should update with player 1's move
+// player 1's reference board should update with player 2's move
+// check for winner (remaining ships to sink === 0) at the end of every turn
+// if player has won, show message and do not show a next button
+// start new game button
