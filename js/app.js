@@ -11,9 +11,10 @@ let turn;
 let shipsToPlace;
 let startingIndex = -1;
 let secondIndex = -1;
-let placeShips;
 let pOneBoard;
 let pTwoBoard;
+
+let placeShips;
 
 // CACHED ELEMENTS
 let table = document.querySelector('table');
@@ -43,9 +44,9 @@ function render() {
     shipsLeftSpan.innerText = shipsLeft;
     turnMessage.innerText = `${lookup[turn]}'s turn`;
 
-    // TODO: change DOM in render, not handleGuess.
+    // updates divs
     for (let i = 0; i < board.length; i++) {
-        if (board[i] === 0) {
+        if (board[i] === 0 || (board[i] === 1 && !placeShips)) {
             document.querySelectorAll('td div')[i].removeAttribute('class');
         } else if (board[i] === -1) {
             document.querySelectorAll('td div')[i].setAttribute('class', 'map-mark');
@@ -103,6 +104,7 @@ function initializeShips() {
 // 
 
 function play() {
+    turn *= -1;
     placeShips = false;
     // sets initial values
     if (!shipsSunk && !shipsLeft) {
@@ -128,14 +130,19 @@ function play() {
     }
     message.innerText = `Attack ye enemy!`;
 
-    board = new Array(64).fill(0);
+    if (turn === 1) {
+        board = pTwoBoard;
+    } else {
+        board = pOneBoard;
+    }
     render();
-    board = pOneBoard;
 
     table.addEventListener('click', handleGuess);
     nextBtn.removeEventListener('click', play);
     nextBtn.style.display = 'none';
 }
+
+// board now reloads correct board
 
 function handleGuess(event) {
 
@@ -154,12 +161,16 @@ function handleGuess(event) {
 
         message.innerText = 'Hit!';
         if (turn === 1) {
+            pTwoBoard = board;
+
             pOneShipsSunk++;
             pOneShipsLeft--;
 
             shipsSunk = pOneShipsSunk;
             shipsLeft = pOneShipsLeft;
         } else {
+            pOneBoard = board;
+
             pTwoShipsSunk++;
             pTwoShipsLeft--;
 
@@ -171,12 +182,18 @@ function handleGuess(event) {
         div.setAttribute('class', 'map-miss');
         board[index] = -2;
 
+        if (turn === 1) {
+            pTwoBoard = board;
+        } else {
+            pOneBoard = board;
+        }
+
         message.innerText = 'Miss!';
     }
     render();
     table.removeEventListener('click', handleGuess);
     nextBtn.style.display = 'block';
-    nextBtn.addEventListener('click');
+    nextBtn.addEventListener('click', play);
 }
 
 function selectShips(event) {
