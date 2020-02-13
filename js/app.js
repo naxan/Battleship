@@ -135,6 +135,7 @@ function initializeShips() {
     shipsToPlace = 4;
     table.addEventListener('click', selectShips);
     nextBtn.removeEventListener('click', initializeShips);
+    nextBtn.style.display = 'none';
     render();
 }
 
