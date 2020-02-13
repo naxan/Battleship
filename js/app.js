@@ -108,15 +108,18 @@ function play() {
     placeShips = false;
     // sets initial values
     if (!shipsSunk && !shipsLeft) {
-        shipsSunk = 0;
-        shipsLeft = 16;
+        pOneShipsSunk = 0;
+        pOneShipsLeft = 16;
+
+        pTwoShipsSunk = 0;
+        pTwoShipsLeft = 16;
 
         if (turn === 1) {
-            pOneShipsSunk = shipsSunk;
-            pOneShipsLeft = shipsLeft;
+            shipsSunk = pOneShipsSunk;
+            shipsLeft = pOneShipsLeft;
         } else {
-            pTwoShipsSunk = shipsSunk;
-            pTwoShipsLeft = shipsLeft;
+            shipsSunk = pTwoShipsSunk;
+            shipsLeft = pTwoShipsLeft;
         }
 
     } else {
@@ -283,3 +286,4 @@ initializeShips();
 // BUG LOG
 // 1. ships cannot be placed all in one line or the game will forever freeze because the last ship cannot fit in the line and thus cant be completed
 // ships sunk refers to how many hits (red divs) are on the board, not in terms of the ships as they were placed
+// ships sunk and ships left only update on player 1's turn and refresh each new turn. player 2's turn shows NaN
