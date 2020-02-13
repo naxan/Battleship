@@ -47,6 +47,10 @@ function render() {
     for (let i = 0; i < board.length; i++) {
         if (board[i] === 0) {
             document.querySelectorAll('td div')[i].removeAttribute('class');
+        } else if (board[i] === -1) {
+            document.querySelectorAll('td div')[i].setAttribute('class', 'map-mark');
+        } else if (board[i] === -2) {
+            document.querySelectorAll('td div')[i].setAttribute('class', 'map-miss');
         }
     }
 
@@ -70,16 +74,6 @@ function shuffle(array) {
     }
     return array;
 }
-
-// game starts with initializeShips
-// message reads "place your ships!"
-// player sets ships
-// when shipsToPlace === 0, 'next' button appears
-// next button should
-// lookup turn. if player 1 turn, save board to variable pOneBoard. if player 2 turn, save board to pTwoBoard
-// set shipsToPlace back to initial value (ie 4)
-// clear board back to 0's
-// switch player turn
 
 function initializeShips() {
     placeShips = true;
@@ -106,11 +100,32 @@ function initializeShips() {
     render();
 }
 
-function initializePlay() {
+// 
+
+function play() {
     placeShips = false;
     // sets initial values
-    shipsSunk = 0;
-    shipsLeft = 16;
+    if (!shipsSunk && !shipsLeft) {
+        shipsSunk = 0;
+        shipsLeft = 16;
+
+        if (turn === 1) {
+            pOneShipsSunk = shipsSunk;
+            pOneShipsLeft = shipsLeft;
+        } else {
+            pTwoShipsSunk = shipsSunk;
+            pTwoShipsLeft = shipsLeft;
+        }
+
+    } else {
+        if (turn === 1) {
+            shipsSunk = pOneShipsSunk;
+            shipsLeft = pOneShipsLeft;
+        } else {
+            shipsSunk = pTwoShipsSunk;
+            shipsLeft = pTwoShipsLeft;
+        }
+    }
     message.innerText = `Attack ye enemy!`;
 
     board = new Array(64).fill(0);
@@ -118,7 +133,7 @@ function initializePlay() {
     board = pOneBoard;
 
     table.addEventListener('click', handleGuess);
-    nextBtn.removeEventListener('click', initializePlay);
+    nextBtn.removeEventListener('click', play);
     nextBtn.style.display = 'none';
 }
 
@@ -137,16 +152,32 @@ function handleGuess(event) {
         div.setAttribute('class', 'map-mark');
         board[index] = -1;
 
-        shipsSunk++;
-        shipsLeft--;
+        message.innerText = 'Hit!';
+        if (turn === 1) {
+            pOneShipsSunk++;
+            pOneShipsLeft--;
+
+            shipsSunk = pOneShipsSunk;
+            shipsLeft = pOneShipsLeft;
+        } else {
+            pTwoShipsSunk++;
+            pTwoShipsLeft--;
+
+            shipsSunk = pTwoShipsSunk;
+            shipsLeft = pTwoShipsLeft;
+        }
+        render();
     } else if (board[index] === 0) {
         div.setAttribute('class', 'map-miss');
-        board[index] = -1;
+        board[index] = -2;
+
+        message.innerText = 'Miss!';
     }
     render();
+    table.removeEventListener('click', handleGuess);
+    nextBtn.style.display = 'block';
+    nextBtn.addEventListener('click');
 }
-
-initializeShips();
 
 function selectShips(event) {
     // finds index of square clicked
@@ -208,39 +239,29 @@ function selectShips(event) {
             shipsToPlace--;
             render();
 
-            if (turn === 1) {
-                pOneBoard = board;
-            } else {
-                pTwoBoard = board;
-            }
-
             if (shipsToPlace === 0) {
+
+                if (turn === 1) {
+                    pOneBoard = board;
+                } else {
+                    pTwoBoard = board;
+                }
+
                 message.innerText = `Your ships have been placed!`;
                 nextBtn.style.display = 'block';
                 table.removeEventListener('click', selectShips);
+
                 if (turn === 1) {
                     nextBtn.addEventListener('click', initializeShips);
                 } else {
-                    nextBtn.addEventListener('click', initializePlay);
+                    nextBtn.addEventListener('click', play);
                 }
             }
         }
     }
 }
 
-// allow player to placd ships on grid
-// allow player to choose a ship to place (have buttons of ships on the side. when ship is selected, add event listener for that ship's placement function, then once ship is placed, remove event listener)
-// have "finish ship placement"/'next' button that only appears once all ships are placed. removes all divs from the board and saves board array to player1's board variable
-// allow player 2 to place ships
-// player1's turn. display a board taking aim at player 2's ships to click on, as well as a smaller reference board to see how their ships are faring and whats been hit
-// handle click event to check if theres a ship
-// change div color and display message if ship has been hit. remove event listener. add next button
-// player 2's turn
-// player 2's reference board should update with player 1's move
-// player 1's reference board should update with player 2's move
-// check for winner (remaining ships to sink === 0) at the end of every turn
-// if player has won, show message and do not show a next button
-// start new game button
+initializeShips();
 
 // BUG LOG
 // 1. ships cannot be placed all in one line or the game will forever freeze because the last ship cannot fit in the line and thus cant be completed
