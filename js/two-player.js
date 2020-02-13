@@ -15,6 +15,7 @@ let pOneBoard;
 let pTwoBoard;
 
 let placeShips;
+let shipsSet;
 let pTwoShipsToAttack;
 let pOneShipsToAttack;
 
@@ -29,10 +30,11 @@ let resetBtn = document.getElementById('reset');
 let nextBtn = document.getElementById('next');
 let squares = document.querySelectorAll('td div');
 let markedSquares = document.querySelectorAll('div .map-mark');
+let shipsSetMessage = document.getElementById('ships-set');
+let shipsToPlaceMessage = document.getElementById('ships-to-place');
 
-// EVENT LISTENERS
+// PERMANENT EVENT LISTENERS
 resetBtn.addEventListener('click', initialize);
-// table 'click' listener in initialize function
 
 // LOOK UP TURN
 const lookup = {
@@ -63,9 +65,13 @@ function render() {
     if (!placeShips) {
         shipsSunkSpan.innerText = `Ships sunk: ${shipsSunk}`;
         shipsLeftSpan.innerText = `Ships left to find: ${shipsLeft}`;
+        shipsSetMessage.innerHTML = '';
+        shipsToPlaceMessage.innerHTML = '';
     } else if (placeShips) {
         shipsSunkSpan.innerText = '';
         shipsLeftSpan.innerText = '';
+        shipsSetMessage.innerHTML = `Ships set: ${shipsSet}`;
+        shipsToPlaceMessage.innerHTML = `Ships available: ${shipsToPlace}`;
     }
 
     // displays whose turn it is
@@ -88,22 +94,6 @@ function render() {
         nextBtn.style.display = 'none';
     }
 }
-
-/*
-function shuffle(array) {
-    let newPosition;
-    let temporaryStorage;
-
-    for (let i = array.length - 1; i > 0; i--) {
-        newPosition = Math.floor(Math.random() * (i + 1));
-
-        temporaryStorage = array[i];
-        array[i] = array[newPosition];
-        array[newPosition] = temporaryStorage;
-    }
-    return array;
-}
-*/
 
 function initialize() {
     turn = -1;
@@ -131,8 +121,10 @@ function initializeShips() {
     board = new Array(64).fill(0);
     turn *= -1;
     message.innerText = `Place your ships!`;
-
+    // TODO initialize these variables outside the function!
+    shipsSet = 0;
     shipsToPlace = 4;
+
     table.addEventListener('click', selectShips);
     nextBtn.removeEventListener('click', initializeShips);
     nextBtn.style.display = 'none';
@@ -226,7 +218,6 @@ function handleGuess(event) {
         // checks for sunk ships and updates shipsSunk and shipsLeft
         for (let i = 0; i < pTwoShipsToAttack.length; i++) {
             if (arraysMatch(pTwoShipsToAttack[i], [-1, -1, -1])) {
-                console.log('turn 2 ship sunk if statement running');
                 pTwoShipsToAttack.splice(i, 1);
                 pTwoShipsSunk++;
                 pTwoShipsLeft--;
@@ -320,6 +311,7 @@ function selectShips(event) {
 
             console.log('ship complete!');
             shipsToPlace--;
+            shipsSet++;
 
             render();
 
@@ -345,6 +337,4 @@ initialize();
 
 // BUG LOG
 // 1. ships cannot be placed all in one line or the game will forever freeze because the last ship cannot fit in the line and thus cant be completed
-// ships sunk refers to how many hits (red divs) are on the board, not in terms of the ships as they were placed
 // if uer clicks a previously used space when battling, the eventlistener will be removed and it will act like it was selected and theyll lose their turn
-// next button does not disappear between switching turns for setting ships
