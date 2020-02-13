@@ -51,6 +51,12 @@ td div {
     background-color: red;
 }
 
+.map-miss {
+    height: var(--square-length);
+    width: var(--square-length);
+    background-color: grey;
+}
+
 aside {
     width: 200px;
 }

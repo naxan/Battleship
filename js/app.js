@@ -2,19 +2,24 @@
 let board;
 let shipsSunk;
 let shipsLeft;
-let cannonballs;
+
+let pOneShipsSunk;
+let pTwoShipsSunk;
+let pOneShipsLeft;
+let pTwoShipsLeft;
 let turn;
 let shipsToPlace;
 let startingIndex = -1;
 let secondIndex = -1;
 let placeShips;
+let pOneBoard;
+let pTwoBoard;
 
 // CACHED ELEMENTS
 let table = document.querySelector('table');
 let tableData = document.querySelectorAll('td');
 let shipsSunkSpan = document.getElementById('ships-sunk');
 let shipsLeftSpan = document.getElementById('ships-left');
-let cannonballsSpan = document.getElementById('cannonballs');
 let message = document.getElementById('message');
 let turnMessage = document.getElementById('player-turn');
 let resetBtn = document.getElementById('reset');
@@ -36,23 +41,18 @@ const lookup = {
 function render() {
     shipsSunkSpan.innerText = shipsSunk;
     shipsLeftSpan.innerText = shipsLeft;
-    cannonballsSpan.innerText = cannonballs;
+    turnMessage.innerText = `${lookup[turn]}'s turn`;
 
     // TODO: change DOM in render, not handleGuess.
-    if (placeShips) {
-        for (let i = 0; i < board.length; i++) {
-            if (board[i] === 0) {
-                document.querySelectorAll('td div')[i].removeAttribute('class');
-            }
+    for (let i = 0; i < board.length; i++) {
+        if (board[i] === 0) {
+            document.querySelectorAll('td div')[i].removeAttribute('class');
         }
     }
 
     // Checks for winner
     if (shipsLeft === 0) {
         message.innerHTML = `<strong>Congrats!</strong> You've won! Huzzah and all that.`;
-        table.removeEventListener('click', handleGuess);
-    } else if (cannonballs === 0) {
-        message.innerHTML = `<strong>Sorry!</strong> You've lost. Git gud`;
         table.removeEventListener('click', handleGuess);
     }
 }
@@ -79,13 +79,11 @@ function shuffle(array) {
 // lookup turn. if player 1 turn, save board to variable pOneBoard. if player 2 turn, save board to pTwoBoard
 // set shipsToPlace back to initial value (ie 4)
 // clear board back to 0's
-// delete divs
 // switch player turn
 
 function initializeShips() {
     placeShips = true;
     board = new Array(64).fill(0);
-    render();
     nextBtn.style.display = 'none';
 
     // hide all divs
@@ -97,46 +95,33 @@ function initializeShips() {
 
     if (!turn) {
         turn = 1;
+    } else {
+        turn *= -1;
     }
-    turnMessage.innerText = `${lookup[turn]}'s turn`;
     message.innerText = `Place your ships!`;
 
     shipsToPlace = 4;
     table.addEventListener('click', selectShips);
     nextBtn.removeEventListener('click', initializeShips);
-
-    console.log('initializeShips running');
+    render();
 }
-//initializeShips();
 
 function initializePlay() {
     placeShips = false;
     // sets initial values
     shipsSunk = 0;
-    shipsLeft = 7;
-    cannonballs = 24;
-    message.innerText = `Place your ships!`;
+    shipsLeft = 16;
+    message.innerText = `Attack ye enemy!`;
 
-    /*
-    // randomize board
-    board = Array(64).fill(0);
-    for (let i = 0; i < shipsLeft; i++) {
-        board[i] = 1;
-    }
-    shuffle(board);
-    */
     board = new Array(64).fill(0);
-
-    // Remove all divs in table.
-    for (let i = 0; i < markedSquares.length; i++) {
-        markedSquares[i].parentNode.removeChild(markedSquares[i]);
-    }
-
     render();
-    table.addEventListener('click', selectShips);
+    board = pOneBoard;
+
+    table.addEventListener('click', handleGuess);
+    nextBtn.removeEventListener('click', initializePlay);
+    nextBtn.style.display = 'none';
 }
 
-/*
 function handleGuess(event) {
 
     let index;
@@ -147,33 +132,23 @@ function handleGuess(event) {
         }
     }
 
+    let div = document.querySelectorAll('td div')[index];
     if (board[index] === 1) {
-        let div = document.createElement('div');
         div.setAttribute('class', 'map-mark');
-        tableData[index].appendChild(div);
-        div.style.backgroundColor = 'red';
         board[index] = -1;
 
         shipsSunk++;
         shipsLeft--;
-        cannonballs--;
     } else if (board[index] === 0) {
-        let div = document.createElement('div');
-        div.setAttribute('class', 'map-mark');
-        tableData[index].appendChild(div);
-        div.style.backgroundColor = 'grey';
+        div.setAttribute('class', 'map-miss');
         board[index] = -1;
-
-        cannonballs--;
     }
     render();
 }
-*/
 
 initializeShips();
 
 function selectShips(event) {
-    console.log('selectShips running');
     // finds index of square clicked
     let index;
     for (let i = 0; i < tableData.length; i++) {
@@ -182,7 +157,6 @@ function selectShips(event) {
             break;
         }
     }
-    console.log(event.target);
     // keeps ships from being able to wrap around the edges of the board when placed
     if (
         ((startingIndex + 1) % 8 === 0 && index % 8 === 0 && startingIndex != -1) ||
@@ -234,11 +208,21 @@ function selectShips(event) {
             shipsToPlace--;
             render();
 
+            if (turn === 1) {
+                pOneBoard = board;
+            } else {
+                pTwoBoard = board;
+            }
+
             if (shipsToPlace === 0) {
                 message.innerText = `Your ships have been placed!`;
                 nextBtn.style.display = 'block';
                 table.removeEventListener('click', selectShips);
-                nextBtn.addEventListener('click', initializeShips);
+                if (turn === 1) {
+                    nextBtn.addEventListener('click', initializeShips);
+                } else {
+                    nextBtn.addEventListener('click', initializePlay);
+                }
             }
         }
     }
@@ -260,3 +244,4 @@ function selectShips(event) {
 
 // BUG LOG
 // 1. ships cannot be placed all in one line or the game will forever freeze because the last ship cannot fit in the line and thus cant be completed
+// ships sunk refers to how many hits (red divs) are on the board, not in terms of the ships as they were placed
