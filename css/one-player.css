@@ -1,8 +1,3 @@
-body, html {
-    height: 100vh;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-}
-
 body {
     text-align: center;
 }
@@ -13,7 +8,6 @@ h1 {
 }
 
 h2 {
-    font-size: 20px;
     margin: 20px 0;
 }
 
@@ -31,15 +25,15 @@ table {
 }
 
 td {
-    height: 60px;
-    width: 60px;
+    height: var(--square-length);
+    width: var(--square-length);
     border: 4px solid grey;
     cursor: pointer;
 }
 
 td div {
-    height: 60px;
-    width: 60px;
+    height: var(--square-length);
+    width: var(--square-length);
     border-radius: 50%;
 }
 
@@ -49,6 +43,4 @@ aside {
 
 #reset {
     margin-top: 50px;
-    background-color: red;
-    color: white;
 }
