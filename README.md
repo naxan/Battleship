@@ -43,3 +43,4 @@ The two player game is much more complex. The game basically runs on a sequence 
 2. In one player, randomizing the board to have ships with a length above 1
 3. In two player, allow players to view both the board they are attacking as well as their board of ships to see how their ships are faring.
 4. Add more privacy between turn swaps
+5. Make the game more mobile friendly.
