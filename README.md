@@ -7,13 +7,14 @@ This is a collection of two battleship games. There is a one player option where
 ![](assets/battleship-wireframe.png)
 
 ## User Story
-One Player
+
+### One Player
 1. The player clicks on a square in the grid. If a hidden boat is there, the square will light up red. Else, it will light up gray
 2. Once the player clicks a certain determined number of times and has not clicked on all the hidden ship squares, the game will end and a losing message will appear.
 3. If instead the player clicks on all hidden ship squares, the game will end and a winning message will appear
 4. When player clicks on reset button, the board will reset to be blank and the hidden boats reshuffled randomly across the board.
 
-Two Player
+### Two Player
 1. Player one clicks on 3 adjacent squares to create a ship and repeats this process a total of 4 times.
 2. Player one clicks the "Next" button and slides the screen to player two to select their ships.
 3. Player two now clicks on 3 adjacent squares 4 times to select their ships.
@@ -38,7 +39,7 @@ The two player game is much more complex. The game basically runs on a sequence 
 1. Ships cannot be placed so that they fill an entire line of the grid else the game will freeze due to there being no viable index available for the last ship as the grid is only 8 units long and ships are 3 units long.
 2. If the user clicks on a previously clicked space when guessing for ships, their turn will be forfeited and they will be forced to press 'Next'.
 
-## Future Goals
+### Future Goals
 1. Have players able to place a stock of ships of different lengths
 2. In one player, randomizing the board to have ships with a length above 1
 3. In two player, allow players to view both the board they are attacking as well as their board of ships to see how their ships are faring.
