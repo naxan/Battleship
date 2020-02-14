@@ -3,14 +3,8 @@
 ## Intro
 This is a collection of two battleship games. There is a one player option where the player can try to find all the ships hidden on the board with a limited number of cannonballs. There is also a two player option where both players can place 4 ships on their board and then battle each other by competing to see who can sink all of the other's ships first.
 
-## Technology and Approach
-This app is made entirely with HTML, CSS, and Javascript. Both games work in similar ways. 
-
-At it's most basic, I created a table with 8 rows and 8 columns to act as the board that is connected to an array holding the values of hidden ships. When the player clicks on the table, a click event will check for the index within the table of the square clicked and check that same index in the connected ships array to see if that square contained a ship. If so, a red div will appear. If not, a grey div will appear.
-
-The one player game starts with a board being filled with 7 ships and then being randomly shuffled. Every time the user clicks on the board, their remaining cannonballs decrease. The game ends whether the user runs out of all cannonballs (loss) or the user finds all of the ships (win). Click events are then removed and a winning or losing message appears.
-
-The two player game is much more complex. The game basically runs on a sequence of functions that act as different stages of the game: initialize, initializeShips, and play. The initialize function initializes all of the variables and event listeners to make the game ready to start. InitializeShips begins the phase where players can hide 4 ships on their board. Play begins the phase where players attack the other player's board searching for their ships, one at a time. There are several other functions (ie selectShips, handleGuess) that are called as click event listeners during the first and second gameplay phase. 
+## Wireframes
+![](assets/battleship-wireframe.png)
 
 ## User Story
 One Player
@@ -29,6 +23,23 @@ Two Player
 7. Player two clicks the grid to guess where a ship is. All the same things occur.
 8. When one player has found all of the other player's ships, a win message will appear and the game ends.
 
+## Technology and Approach
+This app is made entirely with HTML, CSS, and Javascript. Both games work in similar ways. 
 
-## Wireframes
-![](assets/battleship-wireframe.png)
+At it's most basic, I created a table with 8 rows and 8 columns to act as the board that is connected to an array holding the values of hidden ships. When the player clicks on the table, a click event will check for the index within the table of the square clicked and check that same index in the connected ships array to see if that square contained a ship. If so, a red div will appear. If not, a grey div will appear.
+
+The one player game starts with a board being filled with 7 ships and then being randomly shuffled. Every time the user clicks on the board, their remaining cannonballs decrease. The game ends whether the user runs out of all cannonballs (loss) or the user finds all of the ships (win). Click events are then removed and a winning or losing message appears.
+
+The two player game is much more complex. The game basically runs on a sequence of functions that act as different stages of the game: initialize, initializeShips, and play. The initialize function initializes all of the variables and event listeners to make the game ready to start. InitializeShips begins the phase where players can hide 4 ships on their board. Play begins the phase where players attack the other player's board searching for their ships, one at a time. There are several other functions (ie selectShips, handleGuess) that are called as click event listeners during the first and second gameplay phase.
+
+## Bugs and Future Goals
+
+### Bugs
+1. Ships cannot be placed so that they fill an entire line of the grid else the game will freeze due to there being no viable index available for the last ship as the grid is only 8 units long and ships are 3 units long.
+2. If the user clicks on a previously clicked space when guessing for ships, their turn will be forfeited and they will be forced to press 'Next'.
+
+## Future Goals
+1. Have players able to place a stock of ships of different lengths
+2. In one player, randomizing the board to have ships with a length above 1
+3. In two player, allow players to view both the board they are attacking as well as their board of ships to see how their ships are faring.
+4. Add more privacy between turn swaps
