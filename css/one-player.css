@@ -27,8 +27,6 @@ table {
 td {
     height: var(--square-length);
     width: var(--square-length);
-    border: 4px solid grey;
-    cursor: pointer;
 }
 
 td div {

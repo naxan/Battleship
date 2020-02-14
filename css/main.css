@@ -32,6 +32,11 @@ h3 {
     margin-bottom: 15px;
 }
 
+td {
+    border: 4px solid #aaa;
+    cursor: pointer;
+}
+
 #reset {
     color: red;
     padding: 10px;
