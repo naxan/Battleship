@@ -8,4 +8,4 @@
 
 
 ## Wireframes
-![](images/battleship-wireframe.png)
+![](assets/battleship-wireframe.png)
