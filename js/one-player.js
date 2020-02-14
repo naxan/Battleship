@@ -107,8 +107,8 @@ function shuffle(array) {
 function initialize() {
     // sets initial values
     shipsSunk = 0;
-    shipsLeft = 7;
-    cannonballs = 24;
+    shipsLeft = 12;
+    cannonballs = 40;
     message.innerText = `Search for ships!`;
 
     // TODO: randomize board
