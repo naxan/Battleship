@@ -1,0 +1,82 @@
+:root {
+    --square-length: 60px;
+}
+
+body, html {
+    height: 100vh;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+body {
+    text-align: center;
+}
+
+h1 {
+    font-size: 50px;
+    margin-top: 40px;
+}
+
+h2 {
+    font-size: 20px;
+    margin: 20px 0;
+}
+
+strong {
+    font-weight: bold;
+}
+
+.game {
+    display: flex;
+    justify-content: center;
+}
+
+table {
+    margin: 0px;
+}
+
+td {
+    height: var(--square-length);
+    width: var(--square-length);
+    border: 4px solid grey;
+    cursor: pointer;
+}
+
+td div {
+    border-radius: 50%;
+}
+
+.map-mark {
+    height: var(--square-length);
+    width: var(--square-length);
+    background-color: red;
+}
+
+.map-miss {
+    height: var(--square-length);
+    width: var(--square-length);
+    background-color: grey;
+}
+
+aside {
+    width: 200px;
+}
+
+.game {
+    margin-bottom: 30px;
+}
+button {
+    margin: 0 auto 30px auto;
+}
+
+#reset {
+    display: block;
+    background-color: red;
+    color: white;
+}
+
+#next {
+    padding: 10px;
+    background-color: black;
+    color: white;
+    font-size: 24px;
+}

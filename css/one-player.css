@@ -49,4 +49,6 @@ aside {
 
 #reset {
     margin-top: 50px;
+    background-color: red;
+    color: white;
 }
